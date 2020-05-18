@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 mongo_str = os.getenv('mongo_str')
 client = MongoClient(mongo_str)
-feed_collection = client['darkenifydb']['feedback']
+feed_collection = client['heroku_tdwqwm9s']['feedback']
 
 @app.route('/rating/create', methods=['POST'])
 def submit_rating(): 
