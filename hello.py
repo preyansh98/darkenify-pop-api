@@ -1,21 +1,27 @@
 from flask import Flask, request
+from flask_cors import CORS, cross_origin
 from pymongo import MongoClient
 import os 
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 mongo_str = os.getenv('mongo_str')
 client = MongoClient(mongo_str)
 feed_collection = client['heroku_tdwqwm9s']['feedback']
 
 @app.route('/rating/create', methods=['POST'])
+@cross_origin()
 def submit_rating(): 
-    req_data = request.get_json()
+    user_id = ''
+    rating = 0
 
-    user_id = req_data['id']
-    rating = req_data['rating']
-
-    if type(rating) is not int: 
-        return 'Invalid rating', 400
+    try: 
+        user_id = request.args.get('id')
+        rating = int(request.args.get('rating'))
+    except: 
+        return 'Bad Req', 400 
 
     user_in_db = feed_collection.findone({"user_id" : user_id}); 
 
@@ -28,11 +34,16 @@ def submit_rating():
     return 'OK', 200
 
 @app.route('/issue/create', methods=['POST'])
+@cross_origin()
 def submit_issue():
-    req_data = request.get_json()
+    user_id = ''
+    issue = ''
 
-    user_id = req_data['id']
-    issue = req_data['issue']
+    try: 
+        user_id = request.args.get('id')
+        issue = request.args.get('issue')
+    except: 
+        return 'Bad Req', 400 
 
     user_in_db = feed_collection.findone({"user_id" : user_id}); 
 
